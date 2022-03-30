@@ -5,9 +5,9 @@
     "dependencies": {
         "lodash": "^4.17.21",
         "@formatjs/intl": "^1.14.3",
-        "react": "^16.14.0",
-        "react-dom": "^16.14.0",
-        "react-is": "^17.0.2"
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0",
+        "react-is": "^18.0.0"
     },
     "types": "dist/index.d.ts",
     "scripts": {
@@ -43,12 +43,12 @@
         "@types/enzyme-adapter-react-16": "^1.0.6",
         "@types/jest": "^26.0.23",
         "@types/lodash": "^4.14.168",
-        "@types/react": "^17.0.31",
-        "@types/react-is": "^17.0.0",
-        "@typescript-eslint/eslint-plugin": "^4.0.0",
-        "@typescript-eslint/parser": "^3.10.1",
+        "@types/react": "^17.0.43",
+        "@types/react-dom": "^17.0.14",
+        "@types/react-is": "^17.0.3",
+        "@typescript-eslint/eslint-plugin": "^5.17.0",
+        "@typescript-eslint/parser": "^5.17.0",
         "enzyme": "^3.11.0",
-        "enzyme-adapter-react-16": "^1.15.6",
         "eslint": "^7.32.0",
         "eslint-plugin-react": "^7.26.1",
         "jest": "^26.6.3",
