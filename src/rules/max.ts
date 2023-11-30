@@ -1,5 +1,4 @@
 import { isNumeric } from '../common/utils';
-import { IncorrectArgumentTypeError } from './IncorrectArgumentTypeError';
 import {
     getValue,
     isInputElement,
@@ -8,13 +7,11 @@ import {
     isProgressElement,
     isSelectElement
 } from '../common/dom';
+import { Rule } from '../Rule';
 
-export default {
-    passed(elements: HTMLElement[], max: string): boolean {
-        if (!isNumeric(max)) {
-            throw new IncorrectArgumentTypeError(`max rule has incorrect argument ${max}. Expected a number.`);
-        }
-
+const max = (max: number): Rule => ({
+    name: 'max',
+    passed(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
             if (
                 isInputElement(element)
@@ -26,14 +23,16 @@ export default {
                 const value = getValue(element);
 
                 return value.every((val: string) => {
-                    return isNumeric(val) && parseFloat(val) <= parseFloat(max);
+                    return isNumeric(val) && parseFloat(val) <= max;
                 });
             }
 
             return true;
         })
     },
-    message(): string {
-        return 'max';
+    message() {
+        return ['max', { max }];
     }
-};
+});
+
+export default max;

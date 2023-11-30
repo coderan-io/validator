@@ -6,8 +6,10 @@ import {
     isProgressElement,
     isSelectElement
 } from '../common/dom';
+import { Rule } from '../Rule';
 
-export default {
+const required: Rule = {
+    name: 'required',
     passed(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
             if (
@@ -26,7 +28,9 @@ export default {
         })
     },
 
-    message(): string {
-        return 'required';
+    message() {
+        return ['required'];
     }
 };
+
+export default required;

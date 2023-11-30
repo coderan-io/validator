@@ -2,7 +2,7 @@
  * Return the given string with an uppercase first letter
  */
 const capitalize = (value: string): string => {
-    return value.substr(0, 1).toUpperCase() + value.substr(1, value.length - 1);
+    return value.substring(0, 1).toUpperCase() + value.substring(1);
 }
 
 /**
@@ -10,6 +10,14 @@ const capitalize = (value: string): string => {
  */
 const isNumeric = (value: string): boolean => {
     return !isNaN(+value);
+}
+
+export const arrayToObject = (arr: any[]): Record<string, any> => {
+    return arr.reduce((obj, cur, index) => {
+        obj[String(index)] = cur;
+
+        return obj;
+    }, {});
 }
 
 export {

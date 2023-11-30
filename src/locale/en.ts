@@ -1,14 +1,12 @@
-import { LocaleMessagesMap } from '../LocaleMessages';
+import { LocaleMessages } from '../LocaleMessages';
 
-const en: LocaleMessagesMap = {
-    en: {
-        activeUrl: '{name} is not an active url',
-        checked: '{name} is not checked',
-        max: '{name} should be not greater than {0}',
-        min: '{name} should be at least {0}',
-        regex: '{name} doesn\'t have a valid format',
-        required: '{name} is required'
-    }
+const en: LocaleMessages = {
+    activeUrl: '{name} is not an active url',
+    checked: '{name} is not checked',
+    max: '{name} should be not greater than {max}',
+    min: '{name} should be at least {min}',
+    regex: '{name} doesn\'t have a valid format',
+    required: '{name} is required'
 }
 
 export default en;

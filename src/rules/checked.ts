@@ -3,9 +3,10 @@ import {
     isRadioElement,
     nodeListToArray
 } from '../common/dom';
+import { Rule } from '../Rule';
 
-
-export default {
+const checked: Rule = {
+    name: 'checked',
     passed(elements: HTMLElement[]): boolean  {
         return elements.every((element: HTMLElement): boolean => {
             if (isCheckboxElement(element)) {
@@ -27,7 +28,9 @@ export default {
             return true;
         })
     },
-    message(): string {
-        return 'checked';
+    message() {
+        return ['checked'];
     }
 };
+
+export default checked;

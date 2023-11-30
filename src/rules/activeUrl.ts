@@ -1,6 +1,8 @@
 import { getValue, isInputElement, isSelectElement } from '../common/dom';
+import { Rule } from '../Rule';
 
-export default {
+const activeUrl: Rule ={
+    name: 'activeUrl',
     async passed(elements: HTMLElement[]): Promise<boolean> {
         const promisedElementFetches = elements.map((element: HTMLElement) => {
             return new Promise((resolve: (value: boolean) => void): void => {
@@ -28,7 +30,9 @@ export default {
             .filter((active: boolean) => !active)
             .length;
     },
-    message(): string {
-        return 'activeUrl';
+    message() {
+        return ['activeUrl'];
     }
-}
+};
+
+export default activeUrl;
