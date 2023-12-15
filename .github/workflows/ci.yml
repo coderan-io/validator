@@ -5,7 +5,7 @@ name: CI
 on: [push, pull_request]
 jobs:
   test-coverage:
-    name: Test on Node.js Latest
+    name: Test on latest NodeJS
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -23,7 +23,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV }}
   test-node-lts:
-    name: Test on Node.js v12
+    name: Test on NodeJS 20 (LTS)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codd
