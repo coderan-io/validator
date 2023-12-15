@@ -13,7 +13,7 @@ export class LocaleManager {
     private static locale: string = 'en';
 
     private intlCache: IntlCache = createIntlCache();
-    private intl: IntlShape<string>;
+    private intl: IntlShape;
 
     public constructor(private fieldName: string) {
         this.intl = createIntl({

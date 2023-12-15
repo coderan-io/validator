@@ -7,13 +7,15 @@
     "scripts": {
         "build": "tsc --p tsconfig-build.json && vite build",
         "preview": "vite -c preview/vite.config.ts",
-        "test": "jest"
+        "test": "jest",
+        "test-coverage": "jest --collect-coverage"
     },
     "author": "Eran Machiels",
     "license": "MIT",
     "devDependencies": {
         "@testing-library/jest-dom": "^6.1.4",
         "@testing-library/react": "^14.1.2",
+        "@testing-library/user-event": "^14.5.1",
         "@types/jest": "^29.5.10",
         "@types/react": "^18.2.38",
         "@types/react-dom": "^18.2.17",
@@ -23,6 +25,7 @@
         "eslint": "^8.54.0",
         "eslint-plugin-react": "^7.33.2",
         "jest": "^29.7.0",
+        "jest-canvas-mock": "^2.5.2",
         "jest-environment-jsdom": "^29.7.0",
         "react-dom": "^18.2.0",
         "ts-jest": "^29.1.1",

@@ -1,12 +1,11 @@
 import { FC, StrictMode } from 'react';
 import {
     ValidationField,
-    ValidationArea,
-    required,
-    min
+    ValidationArea, required, min,
 } from '../src';
 
 export const App: FC = () => {
+
     return (
         <StrictMode>
             <h1>Preview</h1>
@@ -15,13 +14,14 @@ export const App: FC = () => {
                 {({validate}) => (
                     <>
                         <ValidationField
-                            name="foo"
                             rules={[required, min(5)]}
-                            validateOn="none"
+                            name="foo"
+                            validateOn="change"
                             validationName="Hiephoi"
                         >
-                            {({errors}) => (
+                            {({errors, valid}) => (
                                 <>
+                                    {valid && <p>Valid</p>}
                                     <div><input type="text" /></div>
                                     <input type="text" />
                                     {errors.length > 0 && errors.map((e) => <p key={e}>{e}</p>)}

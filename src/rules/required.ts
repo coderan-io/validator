@@ -1,14 +1,14 @@
 import {
-    getValue,
+    getValue, isCanvasElement,
     isInputElement,
     isMeterElement,
     isOutputElement,
     isProgressElement,
     isSelectElement
 } from '../common/dom';
-import { Rule } from '../Rule';
+import { RuleObject } from '../Rule';
 
-const required: Rule = {
+const required: RuleObject = {
     name: 'required',
     passed(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
@@ -19,9 +19,11 @@ const required: Rule = {
                 || isOutputElement(element)
                 || isProgressElement(element)
             ) {
-                const value = getValue(element).filter(Boolean);
+                return getValue(element).filter(Boolean).length > 0;
+            }
 
-                return value.length;
+            if (isCanvasElement(element)) {
+                return element.toDataURL().length > 0;
             }
 
             return true;

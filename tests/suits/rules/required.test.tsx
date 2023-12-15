@@ -1,31 +1,88 @@
-import React from 'react';
-import { mount } from 'enzyme';
-import {
-    required,
-    ValidatorAreaProps,
-    ValidatorArea,
-    Validator
-} from '../../../src';
-import tick from '../../common/tick';
+import React, { useEffect, useRef } from 'react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { required, ValidationArea, ValidationField, Validator } from '../../../src';
+import { FieldManager } from '../../../src/FieldManager';
 
 describe('test required rule', () => {
-    beforeEach(() => {
-        Validator.extend('required', required);
-    });
-
+    afterEach(cleanup);
     it('should falsely validate select with options', async () => {
-        const area = mount<ValidatorArea, ValidatorAreaProps>(
-            <ValidatorArea rules="required">
-                <select name="test">
-                    <option value="">Choose...</option>
-                </select>
-            </ValidatorArea>
+        render(
+            <ValidationArea>
+                <ValidationField rules={[required]} name="test">
+                    {({errors}) => (
+                        <>
+                            {errors.length > 0 && errors.map((e) => <p key={e}>{e}</p>)}
+                            <select name="test" data-testid="select">
+                                <option value="">Ch</option>
+                            </select>
+                        </>
+                    )}
+                </ValidationField>
+            </ValidationArea>
         );
 
-        area.find('select').simulate('blur');
-        await tick();
-        expect(area.state().errors.length).toBe(1);
-        expect(area.state().errors[0]).toBe('Test is required');
+        fireEvent.blur(screen.getByTestId('select'));
+
+        await waitFor(() => expect(screen.getByText('Test is required')).toBeInTheDocument());
+    });
+
+    it('should truthy validate canvas', async () => {
+        const TestComponent = () => {
+            const canvasRef = useRef<HTMLCanvasElement>(null);
+
+            useEffect(() => {
+                const ctx = canvasRef.current?.getContext('2d');
+                ctx.fillStyle = '#F00';
+                ctx.fillRect(1, 1, 10, 10);
+            }, []);
+
+            return (
+                <>
+                    <ValidationArea>
+                        <ValidationField rules={[required]} name="test">
+                            {({valid}) => (
+                                <>
+                                    {valid && <p>Valid</p>}
+                                    <canvas ref={canvasRef} data-testid="canvas" width="1" height="1" />
+                                    <select name="test" data-testid="select" >
+                                        <option value="3" selected></option>
+                                    </select>
+                                </>
+                            )}
+                        </ValidationField>
+                    </ValidationArea>
+                </>
+            );
+        }
+
+        render(<TestComponent />);
+
+        fireEvent.blur(screen.getByTestId('select'));
+
+        await waitFor(() => expect(screen.getByText('Valid')).toBeInTheDocument());
+    });
+
+    it('should falsy validate canvas', async () => {
+
+        render(
+            <ValidationArea>
+                <ValidationField rules={[required]} name="test">
+                    {({valid}) => (
+                        <>
+                            {!valid && <p>Invalid</p>}
+                            <canvas />
+                            <select name="test" data-testid="select">
+                                <option value="3" selected></option>
+                            </select>
+                        </>
+                    )}
+                </ValidationField>
+            </ValidationArea>
+        );
+
+        fireEvent.blur(screen.getByTestId('select'));
+
+        await waitFor(() => expect(screen.getByText('Invalid')).toBeInTheDocument());
     });
 
     it('should always validate validatable and not validate non-validatable', async () => {
@@ -35,35 +92,40 @@ describe('test required rule', () => {
         const progress = document.createElement('progress');
         const div = document.createElement('div');
 
-        const validator_input = new Validator([
-            input
-        ],
-        ['required'],
-        'validator_input');
+        const validator_input = new Validator(
+            [input],
+            [required],
+            'validator_input',
+            new FieldManager(),
+        );
 
-        const validator_meter = new Validator([
-            meter
-        ],
-        ['required'],
-        'validator_input');
+        const validator_meter = new Validator(
+            [meter],
+            [required],
+            'validator_input',
+            new FieldManager(),
+        );
 
-        const validator_output = new Validator([
-            output
-        ],
-        ['required'],
-        'validator_input');
+        const validator_output = new Validator(
+            [output],
+            [required],
+            'validator_input',
+            new FieldManager(),
+        );
 
-        const validator_progress = new Validator([
-            progress
-        ],
-        ['required'],
-        'validator_input');
+        const validator_progress = new Validator(
+            [progress],
+            [required],
+            'validator_input',
+            new FieldManager()
+        );
 
-        const validator_div = new Validator([
-            div
-        ],
-        ['required'],
-        'validator_input');
+        const validator_div = new Validator(
+            [div],
+            [required],
+            'validator_input',
+            new FieldManager(),
+        );
 
         await validator_input.validate();
         expect(validator_input.getErrors().length).toBe(1);

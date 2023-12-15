@@ -1,9 +1,10 @@
 import { Validator } from './Validator';
+import { FieldManager } from './FieldManager';
 
 /**
  * Function to access validator using the rule
  */
-export type RuleFunction = (validator: Validator) => RuleObject;
+export type RuleFunction = (fieldManager: FieldManager) => RuleObject;
 
 /**
  * Object structure rules must implement

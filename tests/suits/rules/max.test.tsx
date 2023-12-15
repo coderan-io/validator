@@ -1,19 +1,12 @@
 import React from 'react';
-import { mount } from 'enzyme';
 import {
     Validator,
-    ValidatorArea,
-    ValidatorAreaProps,
-    IncorrectArgumentTypeError,
-    max
+    max, ValidationField, ValidationArea
 } from '../../../src';
-import tick from '../../common/tick';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { FieldManager } from '../../../src/FieldManager';
 
 describe('test max rule', () => {
-    beforeEach(() => {
-        Validator.extend('max', max);
-    });
-
     it('should always validate inputs and not validate non-inputs', async () => {
         const input = document.createElement('input');
         const meter = document.createElement('meter');
@@ -27,41 +20,49 @@ describe('test max rule', () => {
         progress.value = 6;
         progress.max = 10;
 
-        const validator_input = new Validator([
-            input
-        ],
-        ['max:5'],
-        '');
+        const validator_input = new Validator(
+            [
+                input,
+            ],
+            [max(5)],
+            '',
+            new FieldManager()
+        );
 
-        const validator_meter = new Validator([
-            meter
-        ],
-        ['max:5'],
-        '');
+        const validator_meter = new Validator(
+            [
+                meter,
+            ],
+            [max(5)],
+            '',
+            new FieldManager(),
+        );
 
-        const validator_output = new Validator([
-            output
-        ],
-        ['max:5'],
-        '');
+        const validator_output = new Validator(
+            [
+                output,
+            ],
+            [max(5)],
+            '',
+            new FieldManager());
 
-        const validator_progress = new Validator([
-            progress
-        ],
-        ['max:5'],
-        '');
+        const validator_progress = new Validator(
+            [
+                progress,
+            ],
+            [max(5)],
+            '',
+            new FieldManager(),
+        );
 
-        const validator_canvas = new Validator([
-            canvas
-        ],
-        ['max:5'],
-        '');
-
-        const validator_wrong_arg = new Validator([
-            input
-        ],
-        ['max:foo'],
-        '');
+        const validator_canvas = new Validator(
+            [
+                canvas,
+            ],
+            [max(5)],
+            '',
+            new FieldManager(),
+        );
 
         await validator_input.validate();
         expect(validator_input.getErrors().length).toBe(1);
@@ -77,21 +78,26 @@ describe('test max rule', () => {
 
         await validator_canvas.validate();
         expect(validator_canvas.getErrors().length).toBe(0);
-
-        await expect( validator_wrong_arg.validate()).rejects.toBeInstanceOf(IncorrectArgumentTypeError);
     });
 
     it('should validate select', async () => {
-        const area = mount<ValidatorArea, ValidatorAreaProps>(
-            <ValidatorArea rules="max:3">
-                <select name="test">
-                    <option value="4" selected>Option</option>
-                </select>
-            </ValidatorArea>
+        render(
+            <ValidationArea>
+                <ValidationField rules={[max(3)]} name="test">
+                    {({errors}) => (
+                        <>
+                            {errors.length > 0 && errors.map((e) => <p key={e}>{e}</p>)}
+                            <select name="test" data-testid="select">
+                                <option value="4" selected>Option</option>
+                            </select>
+                        </>
+                    )}
+                </ValidationField>
+            </ValidationArea>
         );
 
-        area.find('select').simulate('blur');
-        await tick();
-        expect(area.state().errors.length).toBe(1);
+        fireEvent.blur(screen.getByTestId('select'));
+
+        await waitFor(() => expect(screen.getByText('Test should not be greater than 3')).toBeInTheDocument());
     });
 });

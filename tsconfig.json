@@ -5,6 +5,7 @@
         "target": "ES2022",
         "jsx": "react-jsx",
         "moduleResolution": "Bundler",
+        "esModuleInterop": true,
         "lib": [
             "ES2022",
             "DOM",

@@ -1,16 +1,14 @@
 import { isInputElement, isSelectElement, getValue } from '../common/dom';
-import { Rule } from '../Rule';
+import { RuleObject } from '../Rule';
 
-const regex = (pattern: string): Rule => ({
+const regex = (pattern: string): RuleObject => ({
     name: 'regex',
     passed(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
             const matchesRegex = (value: string) => new RegExp(pattern).test(value);
 
             if (isInputElement(element) || isSelectElement(element)) {
-                const values = getValue(element).filter(Boolean);
-
-                return values.every((value) => matchesRegex(value));
+                return getValue(element).every((value) => matchesRegex(value));
             }
 
             return true;

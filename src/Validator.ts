@@ -1,22 +1,24 @@
 import { Rule, RuleFunction, RuleObject } from './Rule';
 import { getValue, isCanvasElement } from './common/dom';
 import { LocaleManager } from './LocaleManager';
+import { FieldManager } from './FieldManager';
 
 export class Validator {
     private errors: string[] = [];
     private localeManager: LocaleManager;
+    private isRequiredWithRules: string[] = [
+        'required',
+        'requiredIf',
+    ];
 
     public constructor(
         private readonly elements: HTMLElement[],
         private readonly appliedRules: Rule[],
         private readonly name: string | null,
+        private readonly fieldManager: FieldManager,
         private readonly validationName?: string
     ) {
         this.localeManager = new LocaleManager(this.validationName || this.name);
-    }
-
-    public hasRuleApplied(rule: string): boolean {
-        return this.appliedRules.some((appliedRule: Rule) => appliedRule.name === rule);
     }
 
     /**
@@ -38,7 +40,7 @@ export class Validator {
      * Validate a specific rule
      */
     private async validateRule(rule: Rule): Promise<boolean> {
-        const ruleObj: RuleObject = this.isRuleFunction(rule) ? rule(this) : rule;
+        const ruleObj: RuleObject = this.isRuleFunction(rule) ? rule(this.fieldManager) : rule;
 
         const passed = await ruleObj.passed(this.elements);
 
@@ -59,11 +61,9 @@ export class Validator {
     }
 
     public shouldValidate(element: HTMLElement): boolean {
-        if (this.hasRuleApplied('required')) {
-            return true;
-        }
-
-        return !!getValue(element).length || isCanvasElement(element);
+        return this.shouldBeRequired()
+            || isCanvasElement(element)
+            || !!getValue(element).filter(Boolean).length;
     }
 
     /**
@@ -78,5 +78,13 @@ export class Validator {
      */
     private isRuleFunction(rule: Rule): rule is RuleFunction {
         return typeof rule === 'function';
+    }
+
+    private shouldBeRequired(): boolean {
+        return this.appliedRules.some((rule: Rule) => {
+            const name = this.isRuleFunction(rule) ? rule(this.fieldManager).name : rule.name;
+
+            return this.isRequiredWithRules.includes(name);
+        });
     }
 }

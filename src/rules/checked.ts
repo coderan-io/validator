@@ -3,9 +3,9 @@ import {
     isRadioElement,
     nodeListToArray
 } from '../common/dom';
-import { Rule } from '../Rule';
+import { RuleObject } from '../Rule';
 
-const checked: Rule = {
+const checked: RuleObject = {
     name: 'checked',
     passed(elements: HTMLElement[]): boolean  {
         return elements.every((element: HTMLElement): boolean => {

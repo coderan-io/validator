@@ -1,19 +1,19 @@
 import React from 'react';
-import { mount } from 'enzyme';
 import {
     min,
-    Validator,
-    ValidatorArea,
-    IncorrectArgumentTypeError,
-    ValidatorAreaProps
+    ValidationArea,
+    ValidationField,
+    Validator
 } from '../../../src';
-import tick from '../../common/tick';
+import {
+    fireEvent,
+    render,
+    screen,
+    waitFor
+} from '@testing-library/react';
+import { FieldManager } from '../../../src/FieldManager';
 
 describe('test min rule', () => {
-    beforeEach(() => {
-        Validator.extend('min', min);
-    });
-
     it('should always validate inputs and not validate non-inputs', async () => {
         const input = document.createElement('input');
         const meter = document.createElement('meter');
@@ -26,41 +26,40 @@ describe('test min rule', () => {
         meter.max = 10;
         progress.value = 4;
 
-        const validator_input = new Validator([
-            input
-        ],
-        ['min:5'],
-        '');
+        const validator_input = new Validator(
+            [input],
+            [min(5)],
+            '',
+            new FieldManager(),
+        );
 
-        const validator_meter = new Validator([
-            meter
-        ],
-        ['min:5'],
-        '');
+        const validator_meter = new Validator(
+            [meter],
+            [min(5)],
+            '',
+            new FieldManager(),
+        );
 
-        const validator_output = new Validator([
-            output
-        ],
-        ['min:5'],
-        '');
+        const validator_output = new Validator(
+            [output],
+            [min(5)],
+            '',
+            new FieldManager(),
+        );
 
-        const validator_progress = new Validator([
-            progress
-        ],
-        ['min:5'],
-        '');
+        const validator_progress = new Validator(
+            [progress],
+            [min(5)],
+            '',
+            new FieldManager(),
+        );
 
-        const validator_canvas = new Validator([
-            canvas
-        ],
-        ['min:5'],
-        '');
-
-        const validator_wrong_arg = new Validator([
-            input
-        ],
-        ['min:foo'],
-        '');
+        const validator_canvas = new Validator(
+            [canvas],
+            [min(5)],
+            '',
+            new FieldManager()
+        );
 
         await validator_input.validate();
         expect(validator_input.getErrors().length).toBe(1);
@@ -76,21 +75,26 @@ describe('test min rule', () => {
 
         await validator_canvas.validate();
         expect(validator_canvas.getErrors().length).toBe(0);
-
-        await expect( validator_wrong_arg.validate()).rejects.toBeInstanceOf(IncorrectArgumentTypeError);
     });
 
     it('should validate select', async () => {
-        const area = mount<ValidatorArea, ValidatorAreaProps>(
-            <ValidatorArea rules="min:5">
-                <select name="test">
-                    <option value="4" selected>Option</option>
-                </select>
-            </ValidatorArea>
+        render(
+            <ValidationArea>
+                <ValidationField rules={[min(5)]} name="test">
+                    {({errors}) => (
+                        <>
+                            {errors.length > 0 && errors.map((e) => <p key={e}>{e}</p>)}
+                            <select name="test" data-testid="select">
+                                <option value="4" selected>Option</option>
+                            </select>
+                        </>
+                    )}
+                </ValidationField>
+            </ValidationArea>
         );
 
-        area.find('select').simulate('blur');
-        await tick();
-        expect(area.state().errors.length).toBe(1);
+        fireEvent.blur(screen.getByTestId('select'));
+
+        await waitFor(() => expect(screen.getByText('Test should be at least 5')).toBeInTheDocument());
     });
 });

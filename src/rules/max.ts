@@ -7,9 +7,9 @@ import {
     isProgressElement,
     isSelectElement
 } from '../common/dom';
-import { Rule } from '../Rule';
+import { RuleObject } from '../Rule';
 
-const max = (max: number): Rule => ({
+const max = (max: number): RuleObject => ({
     name: 'max',
     passed(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
@@ -20,9 +20,7 @@ const max = (max: number): Rule => ({
                 || isMeterElement(element)
                 || isOutputElement(element)
             ) {
-                const value = getValue(element);
-
-                return value.every((val: string) => {
+                return getValue(element).every((val: string) => {
                     return isNumeric(val) && parseFloat(val) <= max;
                 });
             }

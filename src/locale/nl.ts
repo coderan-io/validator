@@ -6,7 +6,8 @@ const nl: LocaleMessages = {
     max: '{name} max niet meer zijn dan {max}',
     min: '{name} moet minstens {min} zijn',
     regex: '{name} heeft geen geldig formaat',
-    required: '{name} is verplicht'
+    required: '{name} is verplicht',
+    requiredIf: '{name} is verplicht',
 }
 
 export default nl;

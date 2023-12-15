@@ -7,9 +7,9 @@ import {
     isSelectElement
 } from '../common/dom';
 import { isNumeric } from '../common/utils';
-import { Rule } from '../Rule';
+import { RuleObject } from '../Rule';
 
-const min = (min: number): Rule => ({
+const min = (min: number): RuleObject => ({
     name: 'min',
     passed(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
@@ -20,9 +20,7 @@ const min = (min: number): Rule => ({
                 || isMeterElement(element)
                 || isOutputElement(element)
             ) {
-                const value = getValue(element);
-
-                return value.every((val: string) => {
+                return getValue(element).every((val: string) => {
                     return isNumeric(val) && parseFloat(val) >= min;
                 });
             }

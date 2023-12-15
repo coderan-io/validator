@@ -1,13 +1,7 @@
-import {
-    Validator,
-    checked
-} from '../../../src';
+import { Validator, checked } from '../../../src';
+import { FieldManager } from '../../../src/FieldManager';
 
 describe('test checked rule', (): void => {
-    beforeEach((): void => {
-        Validator.extend('checked', checked);
-    });
-
     it('should always validate correct elements', async (): Promise<void> => {
         const checkbox = document.createElement('input');
         checkbox.setAttribute('type', 'checkbox');
@@ -27,30 +21,33 @@ describe('test checked rule', (): void => {
 
         const canvas = document.createElement('canvas');
 
-        const validator_radios = new Validator([
-            radio1,
-            radio2,
-        ],
-        ['checked'],
-        '');
+        const validator_radios = new Validator(
+            [radio1, radio2],
+            [checked],
+            '',
+            new FieldManager(),
+        );
 
-        const validator_checkbox = new Validator([
-            checkbox
-        ],
-        ['checked'],
-        '');
+        const validator_checkbox = new Validator(
+            [checkbox],
+            [checked],
+            '',
+            new FieldManager(),
+        );
 
-        const validator_canvas = new Validator([
-            canvas,
-        ],
-        ['checked'],
-        '');
+        const validator_canvas = new Validator(
+            [canvas],
+            [checked],
+            '',
+            new FieldManager(),
+        );
 
-        const validator_immediate_radio = new Validator([
-            immediate_radio,
-        ],
-        ['checked'],
-        '');
+        const validator_immediate_radio = new Validator(
+            [immediate_radio],
+            [checked],
+            '',
+            new FieldManager(),
+        );
 
         await validator_radios.validate();
         expect(validator_radios.getErrors().length).toBe(1);
@@ -64,4 +61,4 @@ describe('test checked rule', (): void => {
         await validator_immediate_radio.validate();
         expect(validator_immediate_radio.getErrors().length).toBe(0);
     });
-})
+});
