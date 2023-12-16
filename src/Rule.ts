@@ -18,7 +18,7 @@ export type RuleObject = {
     /**
      * Message shown when the rule doesn't pass. This returns a tuple with the translation key and the parameters
      */
-    message(): [string, Record<string, any>?];
+    message(): [string, Record<string, number | string>?];
 }
 
 export type Rule = RuleObject | RuleFunction;
