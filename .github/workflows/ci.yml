@@ -4,32 +4,42 @@ name: CI
 
 on: [push, pull_request]
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 20, latest ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: pnpm install
+      - name: Run tests
+        run: pnpm test
   test-coverage:
     name: Test on latest NodeJS
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Use Node.js latest
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Use NodeJS
         uses: actions/setup-node@v4
         with:
           node-version: latest
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
       - name: Generate coverage report
-        run: npm run test-coverage
+        run: pnpm run test-coverage
       - name: Upload coverage report
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV }}
-  test-node-lts:
-    name: Test on NodeJS 20 (LTS)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout codd
-        uses: actions/checkout@v4
-      - name: Use Node.js 20 (LTS)
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
 
