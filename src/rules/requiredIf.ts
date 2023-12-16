@@ -40,7 +40,7 @@ const requiredIf = (
             return isRequired ? required.passed(elements) : true;
         },
         message() {
-            return ['requiredIf', {otherField, requiredValue}];
+            return ['requiredIf', {otherField, requiredValue: ensureIsArray(requiredValue).join(', ')}];
         },
     });
 
