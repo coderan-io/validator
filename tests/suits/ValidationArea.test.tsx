@@ -191,4 +191,42 @@ describe('test ValidatorProvider', () => {
         await fireEvent.blur(screen.getByRole('textbox'));
         await waitFor(() => expect(screen.getByText('Test es requerido')).toBeInTheDocument());
     });
+
+    it('should be marked as dirty when input is changed', async () => {
+        render(
+            <ValidationArea>
+                <ValidationField name="test">
+                    {({dirty}) => (
+                        <>
+                            {dirty ? <p>Dirty</p> : <p>Clean</p>}
+                            <input data-testid="input" />
+                        </>
+                    )}
+                </ValidationField>
+            </ValidationArea>
+        );
+
+        expect(screen.getByText('Clean')).toBeInTheDocument();
+        fireEvent.change(screen.getByTestId('input'), { target: { value: 'foo' } });
+        expect(screen.getByText('Dirty')).toBeInTheDocument();
+    });
+
+    it('should be marked as touched when input is blurred', async () => {
+        render(
+            <ValidationArea>
+                <ValidationField name="test">
+                    {({touched}) => (
+                        <>
+                            {touched ? <p>Touched</p> : <p>Untouched</p>}
+                            <input data-testid="input" />
+                        </>
+                    )}
+                </ValidationField>
+            </ValidationArea>
+        );
+
+        expect(screen.getByText('Untouched')).toBeInTheDocument();
+        fireEvent.blur(screen.getByTestId('input'));
+        expect(screen.getByText('Touched')).toBeInTheDocument();
+    });
 })

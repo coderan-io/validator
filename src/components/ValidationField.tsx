@@ -127,7 +127,6 @@ export const ValidationField: FC<ValidationFieldProps> = ({
 
     const onElementChange = () => {
         if (!dirty) setDirty(true);
-        if (!touched) setTouched(true);
 
         if (validateOn === 'change') {
             validate();
