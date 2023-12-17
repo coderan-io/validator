@@ -4,6 +4,9 @@ The smart React element validator
 [![example workflow name](https://github.com/coderan-io/validator/workflows/CI/badge.svg)](https://github.com/coderan-io/validator/actions?query=workflow%3ACI)
 [![codecov](https://codecov.io/gh/coderan-io/validator/branch/develop/graph/badge.svg?token=OX5CACK0K0)](https://codecov.io/gh/coderan-io/validator)
 
+> [!WARNING]  
+> Full V3 docs coming soon! The following docs are updated for V3, but not complete yet.
+
 ### Introduction
 The goal of this package, is to simplify the struggle of validating elements in React, with a simple system which allows
 users to add their own rules.  
@@ -11,163 +14,114 @@ The system communicates directly with the elements in the DOM, and is therefore 
 like [Bootstrap](https://react-bootstrap.github.io/).
 
 ### The concept
-Validator consists of two main elements, an `Area` and a `Provider`. Areas are a sort of wrappers having elements that
-need validation as their children. An area scans the underlying components and elements and indexes validatable elements.
+Validator consists of two main elements, an `Area` and a `Field`. Fields are some sort of containers having elements that
+need validation as their children. A field scans the underlying components and elements and indexes validatable elements.
   
-Providers on the other hand are wrappers around areas, and allow them to communicate between each other. This communication
-is needed in order to match with values in other areas. It can also be used to validate all areas at once, and preventing
-actions to happen while not all areas are valid. 
+Areas on the other hand are containers around fields, and allow them to communicate between each other. This communication
+is needed in order to match with values in other fields. It can also be used to validate all areas at once, and preventing
+actions to happen while not all areas are valid. There should always be an area defined around the fields in your form.
 
 ### How to use
-First, start with adding rules to the validator in order to use them. There are some rules pre-made, but more specific
-rules you have to create yourself.
 
-```javascript
-import { Validator } from '@coderan/validator';
-import { min } from '@coderan/rules/min';
-
-Validator.extend('min', min);
-```
-
-#### Area
+#### Field
 Basic usage:
 ```jsx
-import { ValidatorArea } from '@coderan/validator';
+import { ValidationField } from '@coderan/validator';
+import { required } from '@coderan/validator';
 
-<ValidatorArea rules="required">
+<ValidationField rules={[required]}>
     <input name="username" />
-</ValidatorArea>
+</ValidationField>
 ```
-When the input is focused and blurred, the `required` rule is called.
+When the input is blurred, the `required` rule is called.
 
-Every area needs a name. This name is used to index areas in the provider, and make meaningful error messages. When using
-multiple inputs within an area, i.e. when validating a multi-input date of birth, `name` prop is required when defining
-the `ValidatorArea` component. Like so:
+Every field needs a name. This name is used to index fields in the area, and make meaningful error messages. When using
+multiple inputs within an field, i.e. when validating a multi-input date of birth, `name` prop is required when defining
+the `ValidationField` component. Like so:
 
 ```jsx
-import { ValidatorArea } from '@coderan/validator';
+import { ValidationField, min } from '@coderan/validator';
 
-<ValidatorArea rules="min" name="dob">
+<ValidationField rules={[min(5)]} name="dob">
     <input name="day" />
     <input name="month" />
     <input name="year" />
-</ValidatorArea>
+</ValidationField>
 ```
 
 Showing errors:
 ```jsx
-import { ValidatorArea } from '@coderan/validator';
+import { ValidationField, min } from '@coderan/validator';
 
-<ValidatorArea rules="min" name="dob">
+<ValidationField rules={[min(1)]} name="dob">
     {({ errors }) => (
         <>
             <input name="username" />
             { errors.length && <span>{errors[0]}</span> }
         </>
     )}
-</ValidatorArea>
+</ValidationField>
 ```
 
 #### Provider
 Basic usage:
 ```jsx
-import { ValidatorProvider, ValidatorArea } from '@coderan/validator';
+import { ValidationArea, ValidationField, min } from '@coderan/validator';
 
-<ValidatorProvider>
+<ValidationArea>
     {({ validate }) => (
         <>
-            <ValidatorArea rules="min" name="dob">
+            <ValidationField rules={[min(1)]} name="dob">
                 <input name="day" />
                 <input name="month" />
                 <input name="year" />
-            </ValidatorArea>
-            <ValidatorArea rules="min" name="dob">
+            </ValidationField>
+            <ValidationField rules={min(1)} name="dob">
                 <input name="day" />
                 <input name="month" />
                 <input name="year" />
-            </ValidatorArea>
+            </ValidationField>
             <button
                 onClick={() => validate(() => alert('valid'))}>Check</button>
         </>
     )}
-</ValidatorProvider>
+</ValidationArea>
 ```
 
 It is possible to give the validator a `rules` prop as well, whose rules apply to all underlying areas:
 
 ```jsx
-import { ValidatorProvider, ValidatorArea } from '@coderan/validator';
+import { ValidationArea, ValidationField, required, min } from '@coderan/validator';
 
-<ValidatorProvider rules="required">
-    <ValidatorArea rules="min:5">
+<ValidationArea rules={[required]}>
+    <ValidationField rules={[min(5)]}>
         {/* on blur, both required and min rules are applied */}
         <input name="username" /> 
-    </ValidatorArea>
-</ValidatorProvider>
-```
-
-#### Adding rules
-
-With access to validator
-```javascript
-import { Validator } from '@coderan/validator'
-Validator.extend('test_types', (validator: Validator) => ({
-    passed(): boolean {
-        return validator.refs(undefined, HTMLInputElement).length === 1
-            && validator.refs('test1', HTMLTextAreaElement).length === 1
-            && validator.refs('test1').length === 1
-            && validator.refs('test1', HTMLProgressElement).length === 0;
-    },
-    message(): string {
-        return 'test';
-    }
-}));
-```
-
-or without
-```javascript
-import { getValue, isInputElement, isSelectElement } from '@/utils/dom';
-
-export default {
-    passed(elements: HTMLElement[]): boolean {
-        return elements.every((element: HTMLElement) => {
-            if (isInputElement(element) || isSelectElement(element)) {
-                const value = getValue(element);
-
-                return value && value.length;
-            }
-
-            return true;
-        })
-    },
-
-    message(): string {
-        return `{name} is required`;
-    }
-};
+    </ValidationField>
+</ValidationArea>
 ```
 
 You can create your own rules, as long as it follows this interface:
 ```typescript
-import { Validator } from '@coderan/validator';
-
+import { FieldManager } from '@coderan/validator';
 /**
  * Function to access validator using the rule
  */
-declare type RuleFunction = (validator: Validator) => RuleObject;
+export type RuleFunction = (fieldManager: FieldManager) => RuleObject;
 
 /**
  * Object structure rules must implement
  */
-declare type RuleObject = {
+export type RuleObject = {
+    name: string;
     /**
      * Returns whether the rule passed with the given element(s)
      */
-    passed(elements: HTMLElement[], ...args: string[]): boolean;
+    passed(elements: HTMLElement[], ...args: string[]): boolean | Promise<boolean>;
     /**
-     * Message shown when the rule doesn't pass
+     * Message shown when the rule doesn't pass. This returns a tuple with the translation key and the parameters
      */
-    message(): string;
+    message(): [string, Record<string, number | string>?];
 }
 
 export type Rule = RuleObject | RuleFunction;
@@ -175,16 +129,16 @@ export type Rule = RuleObject | RuleFunction;
 
 Perhaps you would like to use a different name for the message than the `name`-attribute. That's perfectly fine! 
 ```tsx
-import { ValidatorArea } from '@coderan/validator';
+import { ValidationField, required } from '@coderan/validator';
 
-<ValidatorArea rules="required" validationName="Surname">
+<ValidationField rules={[required]} validationName="Surname">
     {({ errors }) => (
         <>
             <input name="username" />
             { errors.length && <span>{errors[0]}</span> }
         </>
     )}
-</ValidatorArea>
+</ValidationField>
 ```
 and when no value is present in the input, a message like "Surname is required" will appear. 
 

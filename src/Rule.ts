@@ -1,4 +1,3 @@
-import { Validator } from './Validator';
 import { FieldManager } from './FieldManager';
 
 /**
