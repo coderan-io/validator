@@ -1,13 +1,15 @@
 import {
-    getValue,
+    getValue, isCanvasElement,
     isInputElement,
     isMeterElement,
     isOutputElement,
     isProgressElement,
     isSelectElement
 } from '../common/dom';
+import { RuleObject } from '../Rule';
 
-export default {
+const required: RuleObject = {
+    name: 'required',
     passed(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
             if (
@@ -17,16 +19,20 @@ export default {
                 || isOutputElement(element)
                 || isProgressElement(element)
             ) {
-                const value = getValue(element).filter(Boolean);
+                return getValue(element).filter(Boolean).length > 0;
+            }
 
-                return value.length;
+            if (isCanvasElement(element)) {
+                return element.toDataURL().length > 0;
             }
 
             return true;
         })
     },
 
-    message(): string {
-        return 'required';
+    message() {
+        return ['required'];
     }
 };
+
+export default required;

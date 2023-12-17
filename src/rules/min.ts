@@ -7,14 +7,11 @@ import {
     isSelectElement
 } from '../common/dom';
 import { isNumeric } from '../common/utils';
-import { IncorrectArgumentTypeError } from './IncorrectArgumentTypeError';
+import { RuleObject } from '../Rule';
 
-export default {
-    passed(elements: HTMLElement[], min: string): boolean {
-        if (!isNumeric(min)) {
-            throw new IncorrectArgumentTypeError(`min rule has incorrect argument ${min}. Expected a number.`);
-        }
-
+const min = (min: number): RuleObject => ({
+    name: 'min',
+    passed(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
             if (
                 isInputElement(element)
@@ -23,17 +20,17 @@ export default {
                 || isMeterElement(element)
                 || isOutputElement(element)
             ) {
-                const value = getValue(element);
-
-                return value.every((val: string) => {
-                    return isNumeric(val) && parseFloat(val) >= parseFloat(min);
+                return getValue(element).every((val: string) => {
+                    return isNumeric(val) && parseFloat(val) >= min;
                 });
             }
 
             return true;
         })
     },
-    message(): string {
-        return 'min';
+    message() {
+        return ['min', { min }];
     }
-};
+});
+
+export default min;
