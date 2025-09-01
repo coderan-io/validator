@@ -1,9 +1,7 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import { configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-configure({ adapter: new Adapter() });
+import '@testing-library/jest-dom';
+import 'jest-canvas-mock';
 
 // overwrite thrown errors
 jest.spyOn(global.console, 'error').mockImplementation(() => jest.fn());
 
-require('jest-fetch-mock').enableMocks()
+// require('jest-fetch-mock').enableMocks()

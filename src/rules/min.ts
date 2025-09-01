@@ -7,14 +7,10 @@ import {
     isSelectElement
 } from '../common/dom';
 import { isNumeric } from '../common/utils';
-import { IncorrectArgumentTypeError } from './IncorrectArgumentTypeError';
+import { translatableRule } from '../translatableRule';
 
-export default {
-    passed(elements: HTMLElement[], min: string): boolean {
-        if (!isNumeric(min)) {
-            throw new IncorrectArgumentTypeError(`min rule has incorrect argument ${min}. Expected a number.`);
-        }
-
+export const min = (min: number) => translatableRule({
+    validate(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
             if (
                 isInputElement(element)
@@ -23,17 +19,16 @@ export default {
                 || isMeterElement(element)
                 || isOutputElement(element)
             ) {
-                const value = getValue(element);
+                return getValue(element).every((val: string) => {
+                    if (isNumeric(val)) {
+                        return parseFloat(val) >= min;
+                    }
 
-                return value.every((val: string) => {
-                    return isNumeric(val) && parseFloat(val) >= parseFloat(min);
+                    return val.length >= min;
                 });
             }
 
             return true;
         })
     },
-    message(): string {
-        return 'min';
-    }
-};
+});

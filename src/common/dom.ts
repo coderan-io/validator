@@ -59,7 +59,7 @@ const isProgressElement = (element: HTMLElement): element is HTMLProgressElement
 const htmlCollectionToArray = <T extends Element>(collection: HTMLCollectionOf<T>): T[] => {
     const arr: T[] = [];
 
-    for(let i = 0; i < collection.length; i++) {
+    for (let i = 0; i < collection.length; i++) {
         arr.push(collection.item(i) as T);
     }
 
@@ -68,6 +68,7 @@ const htmlCollectionToArray = <T extends Element>(collection: HTMLCollectionOf<T
 
 /**
  * Returns the value of the element, when it exists
+ * @TODO make in only an array when select
  */
 const getValue = (element: HTMLElement): string[] => {
     if (
@@ -77,16 +78,39 @@ const getValue = (element: HTMLElement): string[] => {
         || isOutputElement(element)
         || isProgressElement(element)
     ) {
-        return [(element.value || '').toString()].filter(Boolean);
+        return [String(element.value || '')];
     }
 
     if (isSelectElement(element)) {
         return htmlCollectionToArray<HTMLOptionElement>(element.selectedOptions)
-            .map((option: HTMLOptionElement) => option.value)
-            .filter(Boolean);
+            .map((option: HTMLOptionElement) => option.value);
     }
 
     return [];
+}
+
+export const getValues = (elements: HTMLElement[]): string[] => elements
+    .map((element: HTMLElement) => getValue(element))
+    .flat();
+
+
+export const canvasHasvalue = (canvas: HTMLCanvasElement): boolean => {
+    const context = canvas.getContext('2d');
+
+    const pixelBuffer = new Uint32Array(
+        context.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+    );
+
+    return !pixelBuffer.some(color => color !== 0);
+}
+
+export const allElementsHaveValue = (elements: HTMLElement[]): boolean => {
+    const canvasElements = elements.filter(isCanvasElement);
+    const nonCanvasElements = elements.filter((element: HTMLElement): boolean => !isCanvasElement(element));
+
+    return canvasElements.every(canvasHasvalue)
+        && getValues(nonCanvasElements).filter(Boolean).length === nonCanvasElements.length;
+
 }
 
 const nodeListToArray = <T extends Node>(nodeList: NodeListOf<T>): T[] => {

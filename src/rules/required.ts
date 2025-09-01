@@ -1,32 +1,19 @@
 import {
+    canvasHasvalue,
     getValue,
-    isInputElement,
-    isMeterElement,
-    isOutputElement,
-    isProgressElement,
-    isSelectElement
+    isCanvasElement,
 } from '../common/dom';
+import { translatableRule } from '../translatableRule';
 
-export default {
-    passed(elements: HTMLElement[]): boolean {
+export const required = translatableRule({
+    validate(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
-            if (
-                isInputElement(element)
-                || isSelectElement(element)
-                || isMeterElement(element)
-                || isOutputElement(element)
-                || isProgressElement(element)
-            ) {
-                const value = getValue(element).filter(Boolean);
-
-                return value.length;
+            if (isCanvasElement(element)) {
+                return canvasHasvalue(element);
             }
 
-            return true;
+            return getValue(element).filter(Boolean).length > 0;
         })
     },
-
-    message(): string {
-        return 'required';
-    }
-};
+    required: true,
+});
