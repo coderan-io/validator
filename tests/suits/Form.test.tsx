@@ -1,25 +1,22 @@
 import React, { useState } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event'
-import { min, required, Rule, ValidationArea, ValidationField } from '../../src';
-import { LocaleManager } from '../../src/LocaleManager';
+import { min, required, Rule, Form, Field } from '../../src';
 
 const passingRule: Rule = {
-    name: 'passing',
     message() {
         return ['Passing rule'];
     },
-    passed(): boolean | Promise<boolean> {
+    validate(): boolean | Promise<boolean> {
         return true;
     }
 }
 
 const notPassingRule: Rule = {
-    name: 'notPassing',
     message() {
         return ['Not passing rule'];
     },
-    passed(): boolean | Promise<boolean> {
+    validate(): boolean | Promise<boolean> {
         return false;
     }
 }
@@ -37,16 +34,16 @@ describe('test ValidatorProvider', () => {
             }
 
             return (
-                <ValidationArea errors={errors}>
-                    <ValidationField name="test">
+                <Form errors={errors}>
+                    <Field name="test">
                         {({errors}) => (
                             <>
                                 {errors.length > 0 && errors.map((e) => <p key={e}>{e}</p>)}
                             </>
                         )}
-                    </ValidationField>
+                    </Field>
                     <button data-testid="add-error" onClick={addError}></button>
-                </ValidationArea>
+                </Form>
             );
         }
         render(<TestComponent />);
@@ -61,16 +58,16 @@ describe('test ValidatorProvider', () => {
 
     it('should not validate and be valid when input empty and no required rule', async () => {
         render(
-            <ValidationArea>
-                <ValidationField name="test">
+            <Form>
+                <Field name="test">
                     {({valid}) => (
                         <>
                             {valid && <p>Valid</p>}
                             <input data-testid="input" />
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>
+                </Field>
+            </Form>
         );
 
         await fireEvent.blur(screen.getByTestId('input'));
@@ -79,16 +76,16 @@ describe('test ValidatorProvider', () => {
 
     it('should validate and be valid when input empty, required rule not applied but other is', async () => {
         render(
-            <ValidationArea>
-                <ValidationField name="test" rules={[min(5)]}>
+            <Form>
+                <Field name="test" rules={[min(5)]}>
                     {({valid}) => (
                         <>
                             {valid && <p>Valid</p>}
                             <input data-testid="input" />
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>
+                </Field>
+            </Form>
         );
 
         await fireEvent.blur(screen.getByTestId('input'));
@@ -97,16 +94,16 @@ describe('test ValidatorProvider', () => {
 
     it('should validate and not be valid when input empty, required rule applied but not first', async () => {
         render(
-            <ValidationArea>
-                <ValidationField name="test" rules={[min(5), required]}>
+            <Form>
+                <Field name="test" rules={[min(5), required]}>
                     {({errors}) => (
                         <>
                             {errors.length > 0 && errors.map((e) => <p key={e}>{e}</p>)}
                             <input data-testid="input" />
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>
+                </Field>
+            </Form>
         );
 
         await fireEvent.blur(screen.getByTestId('input'));
@@ -115,10 +112,10 @@ describe('test ValidatorProvider', () => {
 
     it('should falsy validate areas', async () => {
         render(
-            <ValidationArea>
+            <Form>
                 {({validate}) => (
                     <>
-                        <ValidationField
+                        <Field
                             name="test"
                             rules={[required, notPassingRule]}
                         >
@@ -129,11 +126,11 @@ describe('test ValidatorProvider', () => {
                                     <input />
                                 </>
                             )}
-                        </ValidationField>
+                        </Field>
                         <button data-testid="validate" onClick={() => validate()}></button>
                     </>
                 )}
-            </ValidationArea>
+            </Form>
         );
 
         await userEvent.click(screen.getByTestId('validate'));
@@ -143,10 +140,10 @@ describe('test ValidatorProvider', () => {
 
     it('should truthy validate areas', async () => {
         render(
-            <ValidationArea>
+            <Form>
                 {({validate}) => (
                     <>
-                        <ValidationField
+                        <Field
                             name="test"
                             rules={[required]}
                         >
@@ -156,54 +153,29 @@ describe('test ValidatorProvider', () => {
                                     <input value="foo" />
                                 </>
                             )}
-                        </ValidationField>
+                        </Field>
                         <button data-testid="validate" onClick={() => validate()}></button>
                     </>
                 )}
-            </ValidationArea>
+            </Form>
         );
 
         await userEvent.click(screen.getByTestId('validate'));
         expect(screen.getByText('Valid')).toBeInTheDocument();
     });
 
-    it('should be able to change locale', async () => {
-        LocaleManager.setLocale('es', {
-            required: '{name} es requerido'
-        });
-
-        render(
-            <ValidationArea>
-                <ValidationField
-                    name="test"
-                    rules={[required]}
-                >
-                    {({errors}) => (
-                        <>
-                            {errors.length > 0 && errors.map((e) => <p key={e}>{e}</p>)}
-                            <input />
-                        </>
-                    )}
-                </ValidationField>
-            </ValidationArea>
-        );
-
-        await fireEvent.blur(screen.getByRole('textbox'));
-        await waitFor(() => expect(screen.getByText('Test es requerido')).toBeInTheDocument());
-    });
-
     it('should be marked as dirty when input is changed', async () => {
         render(
-            <ValidationArea>
-                <ValidationField name="test">
+            <Form>
+                <Field name="test">
                     {({dirty}) => (
                         <>
                             {dirty ? <p>Dirty</p> : <p>Clean</p>}
                             <input data-testid="input" />
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>
+                </Field>
+            </Form>
         );
 
         expect(screen.getByText('Clean')).toBeInTheDocument();
@@ -213,16 +185,16 @@ describe('test ValidatorProvider', () => {
 
     it('should be marked as touched when input is blurred', async () => {
         render(
-            <ValidationArea>
-                <ValidationField name="test">
+            <Form>
+                <Field name="test">
                     {({touched}) => (
                         <>
                             {touched ? <p>Touched</p> : <p>Untouched</p>}
                             <input data-testid="input" />
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>
+                </Field>
+            </Form>
         );
 
         expect(screen.getByText('Untouched')).toBeInTheDocument();

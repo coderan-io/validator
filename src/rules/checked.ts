@@ -3,34 +3,29 @@ import {
     isRadioElement,
     nodeListToArray
 } from '../common/dom';
-import { RuleObject } from '../Rule';
+import { translatableRule } from '../translatableRule';
 
-const checked: RuleObject = {
-    name: 'checked',
-    passed(elements: HTMLElement[]): boolean  {
+export const checked = translatableRule({
+    validate(elements: HTMLElement[]): boolean  {
         return elements.every((element: HTMLElement): boolean => {
             if (isCheckboxElement(element)) {
                 return element.checked;
             }
 
-            if (isRadioElement(element)) {
-                if (element.checked) {
-                    return true;
-                }
-
-                const radios = nodeListToArray<HTMLInputElement>(document.querySelectorAll<HTMLInputElement>(
-                    `input[type="radio"][name="${element.name}"]`
-                ));
-
-                return !!radios.length && radios.some((radio: HTMLInputElement) => radio.checked);
+            if (!isRadioElement(element)) {
+                return true;
             }
 
-            return true;
+            if (element.checked) {
+                return true;
+            }
+
+            const radios = nodeListToArray<HTMLInputElement>(document.querySelectorAll<HTMLInputElement>(
+                `input[type="radio"][name="${element.name}"]`
+            ));
+
+            return !!radios.length && radios.some((radio: HTMLInputElement) => radio.checked);
+
         })
     },
-    message() {
-        return ['checked'];
-    }
-};
-
-export default checked;
+});

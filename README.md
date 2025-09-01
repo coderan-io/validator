@@ -26,79 +26,79 @@ actions to happen while not all areas are valid. There should always be an area 
 #### Field
 Basic usage:
 ```jsx
-import { ValidationField } from '@coderan/validator';
+import { Field } from '@coderan/validator';
 import { required } from '@coderan/validator';
 
-<ValidationField rules={[required]}>
+<Field rules={[required]}>
     <input name="username" />
-</ValidationField>
+</Field>
 ```
 When the input is blurred, the `required` rule is called.
 
 Every field needs a name. This name is used to index fields in the area, and make meaningful error messages. When using
 multiple inputs within an field, i.e. when validating a multi-input date of birth, `name` prop is required when defining
-the `ValidationField` component. Like so:
+the `Field` component. Like so:
 
 ```jsx
-import { ValidationField, min } from '@coderan/validator';
+import { Field, min } from '@coderan/validator';
 
-<ValidationField rules={[min(5)]} name="dob">
+<Field rules={[min(5)]} name="dob">
     <input name="day" />
     <input name="month" />
     <input name="year" />
-</ValidationField>
+</Field>
 ```
 
 Showing errors:
 ```jsx
-import { ValidationField, min } from '@coderan/validator';
+import { Field, min } from '@coderan/validator';
 
-<ValidationField rules={[min(1)]} name="dob">
+<Field rules={[min(1)]} name="dob">
     {({ errors }) => (
         <>
             <input name="username" />
             { errors.length && <span>{errors[0]}</span> }
         </>
     )}
-</ValidationField>
+</Field>
 ```
 
 #### Provider
 Basic usage:
 ```jsx
-import { ValidationArea, ValidationField, min } from '@coderan/validator';
+import { Form, Field, min } from '@coderan/validator';
 
-<ValidationArea>
+<Form>
     {({ validate }) => (
         <>
-            <ValidationField rules={[min(1)]} name="dob">
+            <Field rules={[min(1)]} name="dob">
                 <input name="day" />
                 <input name="month" />
                 <input name="year" />
-            </ValidationField>
-            <ValidationField rules={min(1)} name="dob">
+            </Field>
+            <Field rules={min(1)} name="dob">
                 <input name="day" />
                 <input name="month" />
                 <input name="year" />
-            </ValidationField>
+            </Field>
             <button
                 onClick={() => validate(() => alert('valid'))}>Check</button>
         </>
     )}
-</ValidationArea>
+</Form>
 ```
 
 It is possible to give the validator a `rules` prop as well, whose rules apply to all underlying areas:
 
 ```jsx
-import { ValidationArea, ValidationField, required, min } from '@coderan/validator';
+import { Form, Field, required, min } from '@coderan/validator';
 
-<ValidationArea rules={[required]}>
-    <ValidationField rules={[min(5)]}>
+<Form rules={[required]}>
+    <Field rules={[min(5)]}>
         {/* on blur, both required and min rules are applied */}
         <input name="username" /> 
-    </ValidationField>
-</ValidationArea>
+    </Field>
+</Form>
 ```
 
 You can create your own rules, as long as it follows this interface:
@@ -129,16 +129,16 @@ export type Rule = RuleObject | RuleFunction;
 
 Perhaps you would like to use a different name for the message than the `name`-attribute. That's perfectly fine! 
 ```tsx
-import { ValidationField, required } from '@coderan/validator';
+import { Field, required } from '@coderan/validator';
 
-<ValidationField rules={[required]} validationName="Surname">
+<Field rules={[required]} validationName="Surname">
     {({ errors }) => (
         <>
             <input name="username" />
             { errors.length && <span>{errors[0]}</span> }
         </>
     )}
-</ValidationField>
+</Field>
 ```
 and when no value is present in the input, a message like "Surname is required" will appear. 
 

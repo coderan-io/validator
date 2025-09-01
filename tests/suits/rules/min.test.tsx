@@ -1,8 +1,8 @@
 import React from 'react';
 import {
     min,
-    ValidationArea,
-    ValidationField,
+    Form,
+    Field,
     Validator
 } from '../../../src';
 import {
@@ -11,7 +11,7 @@ import {
     screen,
     waitFor
 } from '@testing-library/react';
-import { FieldManager } from '../../../src/FieldManager';
+import { FieldRegister } from '../../../src/FieldRegister';
 
 describe('test min rule', () => {
     it('should always validate inputs and not validate non-inputs', async () => {
@@ -30,35 +30,35 @@ describe('test min rule', () => {
             [input],
             [min(5)],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_meter = new Validator(
             [meter],
             [min(5)],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_output = new Validator(
             [output],
             [min(5)],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_progress = new Validator(
             [progress],
             [min(5)],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_canvas = new Validator(
             [canvas],
             [min(5)],
             '',
-            new FieldManager()
+            new FieldRegister()
         );
 
         await validator_input.validate();
@@ -79,8 +79,8 @@ describe('test min rule', () => {
 
     it('should validate select', async () => {
         render(
-            <ValidationArea>
-                <ValidationField rules={[min(5)]} name="test">
+            <Form>
+                <Field rules={[min(5)]} name="test">
                     {({errors}) => (
                         <>
                             {errors.length > 0 && errors.map((e) => <p key={e}>{e}</p>)}
@@ -89,8 +89,8 @@ describe('test min rule', () => {
                             </select>
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>
+                </Field>
+            </Form>
         );
 
         fireEvent.blur(screen.getByTestId('select'));

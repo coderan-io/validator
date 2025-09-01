@@ -93,6 +93,26 @@ export const getValues = (elements: HTMLElement[]): string[] => elements
     .map((element: HTMLElement) => getValue(element))
     .flat();
 
+
+export const canvasHasvalue = (canvas: HTMLCanvasElement): boolean => {
+    const context = canvas.getContext('2d');
+
+    const pixelBuffer = new Uint32Array(
+        context.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+    );
+
+    return !pixelBuffer.some(color => color !== 0);
+}
+
+export const allElementsHaveValue = (elements: HTMLElement[]): boolean => {
+    const canvasElements = elements.filter(isCanvasElement);
+    const nonCanvasElements = elements.filter((element: HTMLElement): boolean => !isCanvasElement(element));
+
+    return canvasElements.every(canvasHasvalue)
+        && getValues(nonCanvasElements).filter(Boolean).length === nonCanvasElements.length;
+
+}
+
 const nodeListToArray = <T extends Node>(nodeList: NodeListOf<T>): T[] => {
     const array: T[] = [];
 

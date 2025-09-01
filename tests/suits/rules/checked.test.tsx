@@ -1,5 +1,5 @@
 import { Validator, checked } from '../../../src';
-import { FieldManager } from '../../../src/FieldManager';
+import { FieldRegister } from '../../../src/FieldRegister';
 
 describe('test checked rule', (): void => {
     it('should always validate correct elements', async (): Promise<void> => {
@@ -25,28 +25,28 @@ describe('test checked rule', (): void => {
             [radio1, radio2],
             [checked],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_checkbox = new Validator(
             [checkbox],
             [checked],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_canvas = new Validator(
             [canvas],
             [checked],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_immediate_radio = new Validator(
             [immediate_radio],
             [checked],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         await validator_radios.validate();

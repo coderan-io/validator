@@ -1,7 +1,7 @@
 import React from 'react';
-import { regex, ValidationArea, ValidationField, Validator } from '../../../src';
+import { regex, Form, Field, Validator } from '../../../src';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { FieldManager } from '../../../src/FieldManager';
+import { FieldRegister } from '../../../src/FieldRegister';
 
 describe('test regex rule', () => {
     it('should always validate inputs and not validate non-inputs', async (): Promise<void> => {
@@ -13,14 +13,14 @@ describe('test regex rule', () => {
             [input],
             [regex('(\\w)+,(\\w)+')],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_canvas = new Validator(
             [canvas],
             [regex('(\\w)+,(\\w)+')],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         await validator_input.validate();
@@ -32,8 +32,8 @@ describe('test regex rule', () => {
 
     it('should validate select', async () => {
         render(
-            <ValidationArea>
-                <ValidationField rules={[regex('(\\w)+,(\\w)+')]} name="test">
+            <Form>
+                <Field rules={[regex('(\\w)+,(\\w)+')]} name="test">
                     {({errors}) => (
                         <>
                             {errors.length > 0 && errors.map((e) => <p key={e}>{e}</p>)}
@@ -42,8 +42,8 @@ describe('test regex rule', () => {
                             </select>
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>
+                </Field>
+            </Form>
         );
 
         fireEvent.blur(screen.getByTestId('select'));

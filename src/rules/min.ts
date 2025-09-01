@@ -7,11 +7,10 @@ import {
     isSelectElement
 } from '../common/dom';
 import { isNumeric } from '../common/utils';
-import { RuleObject } from '../Rule';
+import { translatableRule } from '../translatableRule';
 
-const min = (min: number): RuleObject => ({
-    name: 'min',
-    passed(elements: HTMLElement[]): boolean {
+export const min = (min: number) => translatableRule({
+    validate(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
             if (
                 isInputElement(element)
@@ -21,16 +20,15 @@ const min = (min: number): RuleObject => ({
                 || isOutputElement(element)
             ) {
                 return getValue(element).every((val: string) => {
-                    return isNumeric(val) && parseFloat(val) >= min;
+                    if (isNumeric(val)) {
+                        return parseFloat(val) >= min;
+                    }
+
+                    return val.length >= min;
                 });
             }
 
             return true;
         })
     },
-    message() {
-        return ['min', { min }];
-    }
 });
-
-export default min;

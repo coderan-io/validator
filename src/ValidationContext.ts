@@ -1,11 +1,11 @@
 import { createContext } from 'react';
-import { FieldManager } from './FieldManager';
+import { FieldRegister } from './FieldRegister';
 
 export interface ValidationContextProps {
-    fieldManager: FieldManager;
+    fieldManager: FieldRegister;
     errors: Record<string, string[]>;
 }
 export const ValidationContext = createContext<ValidationContextProps>({
-    fieldManager: new FieldManager(),
+    fieldManager: new FieldRegister(),
     errors: {},
 });

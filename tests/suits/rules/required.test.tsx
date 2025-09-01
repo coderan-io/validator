@@ -1,14 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { required, ValidationArea, ValidationField, Validator } from '../../../src';
-import { FieldManager } from '../../../src/FieldManager';
+import { required, Form, Field, Validator } from '../../../src';
+import { FieldRegister } from '../../../src/FieldRegister';
 
 describe('test required rule', () => {
     afterEach(cleanup);
     it('should falsely validate select with options', async () => {
         render(
-            <ValidationArea>
-                <ValidationField rules={[required]} name="test">
+            <Form>
+                <Field rules={[required]} name="test">
                     {({errors}) => (
                         <>
                             {errors.length > 0 && errors.map((e) => <p key={e}>{e}</p>)}
@@ -17,8 +17,8 @@ describe('test required rule', () => {
                             </select>
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>
+                </Field>
+            </Form>
         );
 
         fireEvent.blur(screen.getByTestId('select'));
@@ -38,8 +38,8 @@ describe('test required rule', () => {
 
             return (
                 <>
-                    <ValidationArea>
-                        <ValidationField rules={[required]} name="test">
+                    <Form>
+                        <Field rules={[required]} name="test">
                             {({valid}) => (
                                 <>
                                     {valid && <p>Valid</p>}
@@ -49,8 +49,8 @@ describe('test required rule', () => {
                                     </select>
                                 </>
                             )}
-                        </ValidationField>
-                    </ValidationArea>
+                        </Field>
+                    </Form>
                 </>
             );
         }
@@ -65,8 +65,8 @@ describe('test required rule', () => {
     it('should falsy validate canvas', async () => {
 
         render(
-            <ValidationArea>
-                <ValidationField rules={[required]} name="test">
+            <Form>
+                <Field rules={[required]} name="test">
                     {({valid}) => (
                         <>
                             {!valid && <p>Invalid</p>}
@@ -76,8 +76,8 @@ describe('test required rule', () => {
                             </select>
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>
+                </Field>
+            </Form>
         );
 
         fireEvent.blur(screen.getByTestId('select'));
@@ -96,35 +96,35 @@ describe('test required rule', () => {
             [input],
             [required],
             'validator_input',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_meter = new Validator(
             [meter],
             [required],
             'validator_input',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_output = new Validator(
             [output],
             [required],
             'validator_input',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_progress = new Validator(
             [progress],
             [required],
             'validator_input',
-            new FieldManager()
+            new FieldRegister()
         );
 
         const validator_div = new Validator(
             [div],
             [required],
             'validator_input',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         await validator_input.validate();

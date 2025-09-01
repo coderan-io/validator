@@ -1,9 +1,8 @@
 import { isInputElement, isSelectElement, getValue } from '../common/dom';
-import { RuleObject } from '../Rule';
+import { translatableRule } from '../translatableRule';
 
-const regex = (pattern: string): RuleObject => ({
-    name: 'regex',
-    passed(elements: HTMLElement[]): boolean {
+export const regex = (pattern: string) => translatableRule({
+    validate(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
             const matchesRegex = (value: string) => new RegExp(pattern).test(value);
 
@@ -14,9 +13,5 @@ const regex = (pattern: string): RuleObject => ({
             return true;
         })
     },
-    message() {
-        return ['regex', { pattern }];
-    }
 });
 
-export default regex;

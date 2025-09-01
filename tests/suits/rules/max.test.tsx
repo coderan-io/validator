@@ -1,10 +1,10 @@
 import React from 'react';
 import {
     Validator,
-    max, ValidationField, ValidationArea
+    max, Field, Form
 } from '../../../src';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { FieldManager } from '../../../src/FieldManager';
+import { FieldRegister } from '../../../src/FieldRegister';
 
 describe('test max rule', () => {
     it('should always validate inputs and not validate non-inputs', async () => {
@@ -26,7 +26,7 @@ describe('test max rule', () => {
             ],
             [max(5)],
             '',
-            new FieldManager()
+            new FieldRegister()
         );
 
         const validator_meter = new Validator(
@@ -35,7 +35,7 @@ describe('test max rule', () => {
             ],
             [max(5)],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_output = new Validator(
@@ -44,7 +44,7 @@ describe('test max rule', () => {
             ],
             [max(5)],
             '',
-            new FieldManager());
+            new FieldRegister());
 
         const validator_progress = new Validator(
             [
@@ -52,7 +52,7 @@ describe('test max rule', () => {
             ],
             [max(5)],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         const validator_canvas = new Validator(
@@ -61,7 +61,7 @@ describe('test max rule', () => {
             ],
             [max(5)],
             '',
-            new FieldManager(),
+            new FieldRegister(),
         );
 
         await validator_input.validate();
@@ -82,8 +82,8 @@ describe('test max rule', () => {
 
     it('should validate select', async () => {
         render(
-            <ValidationArea>
-                <ValidationField rules={[max(3)]} name="test">
+            <Form>
+                <Field rules={[max(3)]} name="test">
                     {({errors}) => (
                         <>
                             {errors.length > 0 && errors.map((e) => <p key={e}>{e}</p>)}
@@ -92,8 +92,8 @@ describe('test max rule', () => {
                             </select>
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>
+                </Field>
+            </Form>
         );
 
         fireEvent.blur(screen.getByTestId('select'));

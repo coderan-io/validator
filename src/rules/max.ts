@@ -7,11 +7,10 @@ import {
     isProgressElement,
     isSelectElement
 } from '../common/dom';
-import { RuleObject } from '../Rule';
+import { translatableRule } from '../translatableRule';
 
-const max = (max: number): RuleObject => ({
-    name: 'max',
-    passed(elements: HTMLElement[]): boolean {
+export const max = (max: number) => translatableRule({
+    validate(elements: HTMLElement[]): boolean {
         return elements.every((element: HTMLElement) => {
             if (
                 isInputElement(element)
@@ -28,9 +27,4 @@ const max = (max: number): RuleObject => ({
             return true;
         })
     },
-    message() {
-        return ['max', { max }];
-    }
 });
-
-export default max;

@@ -1,23 +1,25 @@
-import { FieldManager } from './FieldManager';
-
-/**
- * Function to access validator using the rule
- */
-export type RuleFunction = (fieldManager: FieldManager) => RuleObject;
+import { FieldRegister } from './FieldRegister';
 
 /**
  * Object structure rules must implement
  */
-export type RuleObject = {
-    name: string;
+export type RuleConfig = {
     /**
      * Returns whether the rule passed with the given element(s)
      */
-    passed(elements: HTMLElement[], ...args: string[]): boolean | Promise<boolean>;
+    validate(elements: HTMLElement[], fieldManager: FieldRegister): boolean | Promise<boolean>;
     /**
-     * Message shown when the rule doesn't pass. This returns a tuple with the translation key and the parameters
+     * Indicates whether the rule requires the element to have a value.
+     * When false, the checking of the rule will be skipped if the element
+     * has no value.
+     *
+     * Default: false
      */
-    message(): [string, Record<string, number | string>?];
+    required?: boolean;
 }
 
-export type Rule = RuleObject | RuleFunction;
+export type TranslatableRule = RuleConfig & {
+    message: string;
+}
+
+export type Rule = RuleConfig | TranslatableRule;

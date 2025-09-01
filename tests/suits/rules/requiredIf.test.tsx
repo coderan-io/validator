@@ -1,19 +1,18 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { ValidationArea, ValidationField } from '../../../src';
-import requiredIf from '../../../src/rules/requiredIf';
+import { Form, Field, requiredIf } from '../../../src';
 
 describe('test required rule', () => {
     it('should validate truthy that other field has values', async () => {
         render(
-            <ValidationArea>
-                <ValidationField name="reference" rules={[]}>
+            <Form>
+                <Field name="reference" rules={[]}>
                     <input value="5" />
                     <input value="foo" />
                     <input value="foo" />
-                </ValidationField>
-                <ValidationField
-                    rules={[requiredIf('reference', ['5', 'foo'])]}
+                </Field>
+                <Field
+                    rules={[requiredIf('reference', ['5', 'foo'])('Test is required')]}
                     name="test"
                 >
                     {({ errors }) => (
@@ -25,8 +24,8 @@ describe('test required rule', () => {
                             </select>
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>,
+                </Field>
+            </Form>,
         );
 
         fireEvent.blur(screen.getByTestId('select'));
@@ -38,13 +37,13 @@ describe('test required rule', () => {
 
     it('should validate falsy that other field doesn\'t have values', async () => {
         render(
-            <ValidationArea>
-                <ValidationField name="reference" rules={[]}>
+            <Form>
+                <Field name="reference" rules={[]}>
                     <input value="5" />
                     <input value="foo" />
-                </ValidationField>
-                <ValidationField
-                    rules={[requiredIf('reference', ['5', 'bar'])]}
+                </Field>
+                <Field
+                    rules={[requiredIf('reference', ['5', 'bar'])('Test is required')]}
                     name="test"
                 >
                     {({ valid }) => (
@@ -55,8 +54,8 @@ describe('test required rule', () => {
                             </select>
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>,
+                </Field>
+            </Form>,
         );
 
         fireEvent.blur(screen.getByTestId('select'));
@@ -68,9 +67,9 @@ describe('test required rule', () => {
 
     it('should validate truthy when the other field does not exist', async () => {
         render(
-            <ValidationArea>
-                <ValidationField
-                    rules={[requiredIf('reference', ['5', 'foo'])]}
+            <Form>
+                <Field
+                    rules={[requiredIf('reference', ['5', 'foo'])('Test is required')]}
                     name="test"
                 >
                     {({ valid }) => (
@@ -81,11 +80,11 @@ describe('test required rule', () => {
                             </select>
                         </>
                     )}
-                </ValidationField>
-            </ValidationArea>,
+                </Field>
+            </Form>,
         );
 
-        fireEvent.blur(screen.getByTestId('select'));
+        fireEvent.change(screen.getByTestId('select'));
 
         await waitFor(() =>
             expect(screen.getByText('Valid')).toBeInTheDocument(),
